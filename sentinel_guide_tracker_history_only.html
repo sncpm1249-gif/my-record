@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Central Ability Management Agency</title>
+<style>
+:root{--bg:#0c1420;--panel:#172333;--ink:#f0f4fa;--muted:#9eb6d2;--line:#2b3d54;--accent:#1b3546;--accent2:#3d7885;--danger:#f09aab}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif}
+header{padding:22px 16px 18px;text-align:center;background:#0c1522;color:#fff;border-bottom:1px solid #20364b}
+h1{font-family:"Batang","바탕","Noto Serif KR",serif;font-weight:500;letter-spacing:.04em;font-size:clamp(20px,4vw,29px);margin:0}
+header p{margin:8px 0 0;color:#dce2e9;font-size:12px;letter-spacing:.18em}
+main{max-width:1050px;margin:22px auto;padding:0 14px 40px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{flex:1;border:1px solid var(--line);border-radius:10px;background:#101a28;padding:13px;font-size:14px;font-weight:700;cursor:pointer}.tab.active{background:#1b3b49;color:#62e4f1;border-color:#3d7885}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}.panel h2{font-size:15px;margin:0 0 14px}.subtabs{display:flex;gap:8px;margin-bottom:16px}.subtabs button{flex:1;padding:8px;font-size:13px;border:1px solid var(--line);border-radius:8px;background:#0e1825;color:var(--ink);cursor:pointer}.subtabs button.active{border-color:#c49b50;background:#352d20;font-weight:700;color:#f2c878}
+label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}input,select{width:100%;border:1px solid #344a63;border-radius:8px;padding:10px 11px;background:#0c1623;color:var(--ink);font:inherit}input[type=number]{appearance:textfield}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{padding:10px;background:#111c2a;border-radius:10px;border:1px solid #2b4058}.stat label{margin:0 0 6px}.stat input{font-size:17px;font-weight:700}
+.guiding-warning{position:relative;margin-top:12px;padding:11px 13px 12px 15px;border:1px solid #8b7446;background:linear-gradient(105deg,#242b2d,#172531);color:#e9d39a;border-radius:3px;font-size:13px;font-weight:650;line-height:1.55;box-shadow:inset 3px 0 0 #c5a45c}
+.guiding-warning::before{content:"C.A.M.A.  /  CENTRAL MONITORING SYSTEM";display:block;margin-bottom:5px;color:#9db6c3;font-size:9px;font-weight:800;letter-spacing:.13em}
+.guiding-warning .warning-status{display:inline-block;margin-right:7px;color:#e7bd69;font-size:10px;letter-spacing:.08em}
+.guiding-warning.severe{border-color:#a14f5c;background:linear-gradient(105deg,#321e28,#1b202d);color:#ffc1c9;box-shadow:inset 3px 0 0 #d65e70}
+.guiding-warning.severe::before{color:#d99aa6}
+.guiding-warning.severe .warning-status{color:#ff7e91}
+.stat-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.stat-actions button{font-size:13px;padding:7px 10px;border-radius:7px}
+#damageWrap{padding:10px 12px;border:1px solid #65404b;background:#211b25;border-radius:9px;margin-bottom:12px}
+#damageWrap label{margin:0 0 6px;color:#e5a8b4}
+#damage{width:140px;max-width:100%;padding:7px 9px;font-size:14px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.actions button,.primary,.secondary,.danger{border:0;border-radius:9px;padding:9px 10px;cursor:pointer;font:inherit;font-size:13px;font-weight:650}.actions button,.primary{background:#24535d;color:#f4fbff;border:1px solid #3d8994}.secondary{background:#23394f;color:var(--ink);border:1px solid #3b5873}.danger{background:#35212a;color:#f0a4a4;border:1px solid #653747}
+.result{margin-top:14px;border:1px solid #2b4058;background:#101b2a;border-radius:10px;padding:14px;min-height:84px}.result .result-label{font-size:12px;color:var(--muted);margin-bottom:8px}.result .numbers{font-size:clamp(19px,3.2vw,25px);font-weight:750;letter-spacing:.02em;overflow-wrap:anywhere}.result .detail{margin-top:7px;color:#a9bfd9;font-size:13px;line-height:1.55}
+.full{margin-top:14px}.history-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.history-head h2{margin:0}.history{display:flex;flex-direction:column;gap:8px;margin-top:14px}.log{border:1px solid var(--line);border-radius:11px;padding:12px;background:#0e1825}.logtop{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;color:#9eb6d2}.logtop time{white-space:nowrap}.loghead{display:flex;align-items:center;gap:8px;min-width:0}.logbadge{display:inline-block;flex-shrink:0;padding:3px 8px;border-radius:12px;background:#263b4a;color:#69dce8;font-size:10px;font-weight:800}.logbadge.guide{background:#30284b;color:#c8b5ff}.logbadge.attack{background:#4b3035;color:#ffadb5}.logbadge.defense{background:#4a3b25;color:#ffd58a}.logbadge.guiding{background:#203f45;color:#8ce8df}.logbadge.alert{background:#4b3035;color:#ffadb5}.logtitle{font-size:13px;font-weight:800;margin:0;color:#f0f4fa}.logbody{font-size:13px;line-height:1.55;margin-top:7px;white-space:pre-line;overflow-wrap:anywhere}.logbody div+div{margin-top:1px}.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px;background:#111c2a}
+.note{font-size:12px;line-height:1.6;color:var(--muted);margin-top:12px}.hidden{display:none!important}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.panel{padding:13px}.actions{grid-template-columns:1fr 1fr}.tab{padding:10px;font-size:13px}.actions button,.primary,.secondary,.danger{padding:8px;font-size:12px}}
+</style>
+</head>
+<body>
+<header><h1>Central Ability Management Agency</h1><p>SENTINEL &amp; GUIDE RECORD</p></header>
+<main>
+  <div class="tabs"><button class="tab active" data-role="sentinel">센티넬</button><button class="tab" data-role="guide">가이드</button></div>
+  <div class="layout">
+    <section class="panel">
+      <h2>개체 정보</h2>
+      <div class="subtabs"><button class="rank active" data-rank="S">S 급</button><button class="rank" data-rank="A">A 급</button></div>
+      <div class="statgrid">
+        <div class="stat"><label for="health">체력</label><input id="health" type="number" value="100"></div>
+        <div class="stat"><label for="guiding">가이딩 수치</label><input id="guiding" type="number" min="0" value="100"></div>
+      </div>
+      <div class="stat-actions">
+        <button type="button" id="saveStats">수치 저장</button>
+        <button type="button" class="secondary" id="resetStats">초기화</button>
+      </div>
+      <div id="guidingWarning" class="guiding-warning hidden" role="status" aria-live="polite"></div>
+      <p class="note">체력과 가이딩 수치는 직접 수정할 수 있습니다. 저장한 수치는 브라우저에 자동으로 보관됩니다.</p>
+    </section>
+    <section class="panel">
+      <h2>다이스</h2>
+      <div id="sentinelDice">
+        <div class="actions"><button data-action="attack">공격 · <span class="attackDice">2D10</span></button></div>
+        <div class="actions defense-actions"><button data-action="ability-defense">능력 방어 · <span class="abilityDefenseDice">2D7</span></button><button data-action="normal-defense">일반 방어 · <span class="normalDefenseDice">1D10</span></button></div>
+      </div>
+      <div id="guideDice" class="hidden">
+        <label for="targetRank">대상 센티넬 등급 (접촉 가이딩)</label>
+        <select id="targetRank"><option value="S">S 급 센티넬</option><option value="A">A 급 센티넬</option></select>
+        <div class="actions">
+          <button data-action="radiation">방사 가이딩 · <span class="radiationDice">1D10</span></button>
+          <button data-action="contact">접촉 가이딩 · <span class="contactDice">3D10</span></button>
+          <button data-action="normal-defense">일반 방어 · <span class="guideDefenseDice">1D9</span></button>
+        </div>
+      </div>
+      <div id="damageWrap">
+        <label for="damage">본인이 받은 피해량 (방어 시 필수)</label><input id="damage" type="number" min="0" placeholder="받은 피해량 입력">
+      </div>
+      <div class="result" aria-live="polite">
+        <div class="result-label" id="resultLabel">아직 다이스를 굴리지 않았습니다.</div>
+        <div class="numbers" id="resultNumbers">—</div>
+        <div class="detail" id="resultDetail"></div>
+      </div>
+      <p class="note">결과는 주사위 그림 없이 숫자와 합계로 표시됩니다. 예: <strong>7 + 4 = 11</strong></p>
+    </section>
+  </div>
+  <section class="panel full">
+    <div class="history-head"><h2>전체 기록</h2><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="secondary" id="exportBtn">기록 내보내기 (.txt)</button><button class="danger" id="clearBtn">전체 기록 삭제</button></div></div>
+    <div id="history" class="history"><div class="empty">아직 기록이 없습니다.</div></div>
+  </section>
+</main>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const dice = {
+  sentinel:{S:{attack:[2,10],abilityDefense:[2,7],normalDefense:[1,10]},A:{attack:[2,8],abilityDefense:[2,6],normalDefense:[1,9]}},
+  guide:{S:{radiation:[1,10],contact:{S:[3,10],A:[3,12]},defense:[1,9]},A:{radiation:[1,5],contact:{S:[2,10],A:[3,8]},defense:[1,7]}}
+};
+const state={role:'sentinel',rank:'S',people:{sentinel:{S:{name:'',health:100,guiding:100},A:{name:'',health:100,guiding:100}},guide:{S:{name:'',health:100,guiding:100},A:{name:'',health:100,guiding:100}}},logs:[],last:null};
+const key='cama_sentinel_guide_v2';
+function load(){try{const saved=JSON.parse(localStorage.getItem(key));if(saved){Object.assign(state,saved);}}catch(e){}}
+function save(){localStorage.setItem(key,JSON.stringify(state));}
+function person(){return state.people[state.role][state.rank]}
+function roll(n,s){const arr=[];for(let i=0;i<n;i++)arr.push(Math.floor(Math.random()*s)+1);return {arr,total:arr.reduce((a,b)=>a+b,0)}}
+function diceText(r){return r.arr.join(' + ')+' = '+r.total}
+function rankDiceLabel(){if(state.role==='sentinel'){const d=dice.sentinel[state.rank];$('sentinelDice').querySelector('.attackDice').textContent=d.attack.join('D');$('sentinelDice').querySelector('.abilityDefenseDice').textContent=d.abilityDefense.join('D');$('sentinelDice').querySelector('.normalDefenseDice').textContent=d.normalDefense.join('D');}else{$('guideDice').querySelector('.radiationDice').textContent=dice.guide[state.rank].radiation.join('D');$('guideDice').querySelector('.guideDefenseDice').textContent=dice.guide[state.rank].defense.join('D');const target=$('targetRank').value;$('guideDice').querySelector('.contactDice').textContent=dice.guide[state.rank].contact[target].join('D');}}
+function updateGuidingWarning(){
+ const guiding=Number(person().guiding??100), health=Number(person().health??100), box=$('guidingWarning');
+ let messages=[], severe=false;
+ if(health<=0){messages.push('⚠ 체력이 0 이하입니다. 모든 다이스 사용이 제한됩니다.');severe=true;}
+ else if(health<=20){messages.push('⚠ 사망 주의: 체력이 위험 수치입니다. 즉시 회복이 필요합니다.');severe=true;}
+ if(guiding<=10){
+   messages.push(state.role==='sentinel'?'⚠ 센티넬 폭주 상태입니다.':'⚠ 가이드 탈진 상태입니다.');
+   severe=true;
+ }else if(guiding<=20){
+   messages.push(state.role==='sentinel'?'⚠ 센티넬 폭주 예정. 즉시 가이딩 회복이 필요합니다.':'⚠ 가이드 탈진 위험. 즉시 회복이 필요합니다.');
+   severe=true;
+ }else if(guiding<=30){
+   messages.push(state.role==='sentinel'?'⚠ 센티넬 가이딩 회복이 필요합니다.':'⚠ 가이드 가이딩 회복이 필요합니다.');
+ }else if(guiding<=50){
+   messages.push('주의: 가이딩 수치가 50 이하입니다.');
+ }
+ box.innerHTML=messages.map((message,i)=>'<div'+(i?' style="margin-top:5px"':'')+'><span class="warning-status">'+(severe?'[ EMERGENCY ]':'[ NOTICE ]')+'</span>'+message+'</div>').join('');
+ box.classList.toggle('hidden',!messages.length);
+ box.classList.toggle('severe',severe);
+}
+function syncForm(){const p=person();$('health').value=p.health??100;$('guiding').value=p.guiding??100;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.role===state.role));document.querySelectorAll('.rank').forEach(b=>b.classList.toggle('active',b.dataset.rank===state.rank));$('sentinelDice').classList.toggle('hidden',state.role!=='sentinel');$('guideDice').classList.toggle('hidden',state.role!=='guide');$('damageWrap').classList.remove('hidden');rankDiceLabel();updateGuidingWarning();if(state.last)showResult(state.last,false);}
+function showResult(item,addLog=true){state.last=item;$('resultLabel').textContent=item.label;$('resultNumbers').textContent=item.numbers;$('resultDetail').textContent=item.detail||'';$('damageWrap').classList.remove('hidden');if(addLog){state.logs.unshift({...item,numbers:item.logNumbers??item.numbers,detail:item.logDetail??item.detail,time:new Date().toLocaleString('ko-KR')});save();renderHistory();}}
+function doAction(action){
+ const p=person();
+ // 저장 버튼을 누르지 않았더라도 화면에 직접 입력한 최신 수치를 다이스 계산에 반영
+ if($('guiding').value!=='') p.guiding=Number($('guiding').value)||0;
+ if($('health').value!=='') p.health=Number($('health').value)||0;
+ if(Number(p.health)<=0){save();updateGuidingWarning();$('resultLabel').textContent='체력이 0 이하이므로 다이스를 굴릴 수 없습니다.';$('resultNumbers').textContent='';$('resultDetail').textContent='체력을 회복한 뒤 다시 시도해 주세요.';return;}
+ let spec,label;
+ if(Number(p.guiding)<=0 && ['attack','ability-defense','radiation','contact'].includes(action)){
+   $('resultLabel').textContent='가이딩 수치가 0 이하이므로 다이스를 굴릴 수 없습니다.';
+   $('resultNumbers').textContent='';
+   $('resultDetail').textContent='가이딩 수치를 회복하거나 수정한 뒤 다시 시도해 주세요.';
+   return;
+ }
+ if(action==='attack'){spec=dice.sentinel[state.rank].attack;label='센티넬 · 공격';}
+ if(action==='ability-defense'||action==='normal-defense'){spec=state.role==='sentinel'?(action==='ability-defense'?dice.sentinel[state.rank].abilityDefense:dice.sentinel[state.rank].normalDefense):dice.guide[state.rank].defense;label=(state.role==='sentinel'?'센티넬':'가이드')+' · '+(action==='ability-defense'?'능력 방어':'일반 방어');}
+ if(action==='radiation'){spec=dice.guide[state.rank].radiation;label='가이드 · 방사 가이딩';}
+ if(action==='contact'){spec=dice.guide[state.rank].contact[$('targetRank').value];label='가이드 · 접촉 가이딩';}
+ if((action==='ability-defense'||action==='normal-defense') && ($('damage').value==='' || !Number.isFinite(Number($('damage').value)) || Number($('damage').value)<0)){ $('damage').focus();$('resultLabel').textContent='받은 피해량을 먼저 입력해 주세요.';$('resultNumbers').textContent='';$('resultDetail').textContent='방어 다이스를 굴리려면 피해량을 입력해야 합니다.';return;}
+ const r=roll(spec[0],spec[1]);
+ const actionName=action==='attack'?'공격':action==='ability-defense'?'능력 방어':action==='normal-defense'?'일반 방어':action==='radiation'?'방사 가이딩':'접촉 가이딩';
+ const logNumbers=actionName+' '+spec[0]+'D'+spec[1]+' 결과: ['+r.arr.join(', ')+'] = '+r.total;
+ let detailLines=[],logDetailLines=[];
+ if(state.role==='sentinel' && (action==='attack'||action==='ability-defense')){
+   const before=Number(p.guiding||0),cost=roll(1,10);p.guiding=before-cost.total;
+   detailLines.push('가이딩 수치 −'+cost.total+' ('+diceText(cost)+') · 현재 가이딩 '+p.guiding);
+   logDetailLines.push('가이딩 수치 소모 1D10: ['+cost.arr.join(', ')+'] = '+cost.total+' ('+before+' → '+p.guiding+')');
+ } else if(state.role==='guide' && (action==='radiation'||action==='contact')){
+   const costSpec=state.rank==='A' && $('targetRank').value==='S' ? [2,9] : [1,10];
+   const before=Number(p.guiding||0),cost=roll(costSpec[0],costSpec[1]);p.guiding=before-cost.total;
+   if(action==='contact'){detailLines.push('대상: '+$('targetRank').value+'급 센티넬');logDetailLines.push('대상: '+$('targetRank').value+'급 센티넬');}
+   detailLines.push('가이딩 수치 −'+cost.total+' ('+diceText(cost)+') · 현재 가이딩 '+p.guiding);
+   logDetailLines.push('가이딩 수치 소모 '+costSpec[0]+'D'+costSpec[1]+': ['+cost.arr.join(', ')+'] = '+cost.total+' ('+before+' → '+p.guiding+')');
+ }
+ if(action==='ability-defense'||action==='normal-defense'){
+   const damage=Number($('damage').value),remaining=Math.max(0,damage-r.total),before=Number(p.health||0);p.health=before-remaining;
+   const oldDetail='받은 피해 '+damage+' − 방어 '+r.total+' = 실제 피해 '+remaining+' · 체력 −'+remaining+' · 현재 체력 '+p.health;
+   detailLines.push(action==='normal-defense'?'일반 방어(가이딩 소모 없음) · '+oldDetail:oldDetail);
+   logDetailLines.push('받은 피해 '+damage+' − 방어량 '+r.total+' = 최종 피해 '+remaining+'. 체력 '+before+' → '+p.health+'.');
+   if(action==='normal-defense')logDetailLines.push('일반 방어: 가이딩 수치 소모 없음.');
+ }
+ const detail=detailLines.join('\n');
+ const logDetail=logDetailLines.join('\n');
+ const numbers=diceText(r);
+ $('health').value=p.health;$('guiding').value=p.guiding;
+ updateGuidingWarning(); // 다이스로 가이딩이 소모되는 즉시 경고 단계 갱신
+ save();
+ showResult({label,numbers,detail,logNumbers,logDetail,needsDamage:action==='ability-defense'||action==='normal-defense',role:state.role,rank:state.rank},true);
+}
+function renderHistory(){
+ const el=$('history');
+ if(!state.logs.length){el.innerHTML='<div class="empty">아직 기록이 없습니다.</div>';return;}
+ el.innerHTML=state.logs.map(log=>{
+   const role=log.role==='sentinel'?'센티넬':'가이드';
+   const rank=escapeHtml(log.rank||'');
+   const rawLabel=log.label||'';
+   const title=rawLabel.replace(/^센티넬 · /,'').replace(/^가이드 · /,'');
+   const isDefense=/방어/.test(rawLabel);
+   const isAttack=/공격/.test(rawLabel);
+   const isGuiding=/가이딩|방사|접촉/.test(rawLabel);
+   const categoryClass=isDefense?'defense':isAttack?'attack':log.role==='guide'?'guide':isGuiding?'guiding':'';
+   const fullTitle=role+' · '+rank+'급 '+(title==='상태 수치 저장'?'상태 수치 저장':title==='상태 수치 초기화'?'상태 수치 초기화':title+' 판정');
+   const lines=[];
+   if(log.numbers) lines.push(escapeHtml(log.numbers));
+   if(log.detail) String(log.detail).split('\n').forEach(line=>{if(line.trim())lines.push(escapeHtml(line.trim()));});
+   return `<article class="log"><div class="logtop"><div class="loghead"><strong class="logtitle">${escapeHtml(fullTitle)}</strong></div><time>${escapeHtml(log.time||'')}</time></div><div class="logbody"><span class="logbadge ${categoryClass}">${isDefense?'DEFENSE':isAttack?'ATTACK':log.role==='guide'?'GUIDE':isGuiding?'GUIDING':'SYSTEM'}</span>${lines.map(line=>`<div>${line}</div>`).join('')}</div></article>`;
+ }).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{state.role=b.dataset.role;syncForm();}));
+document.querySelectorAll('.rank').forEach(b=>b.addEventListener('click',()=>{state.rank=b.dataset.rank;syncForm();}));
+$('targetRank').addEventListener('change',rankDiceLabel);
+
+$('health').addEventListener('change',e=>{person().health=Number(e.target.value)||0;e.target.value=person().health;save();updateGuidingWarning();});
+$('guiding').addEventListener('change',e=>{person().guiding=Number(e.target.value)||0;e.target.value=person().guiding;save();updateGuidingWarning();});
+$('saveStats').addEventListener('click',()=>{person().health=Number($('health').value)||0;person().guiding=Number($('guiding').value)||0;$('guiding').value=person().guiding;save();updateGuidingWarning();state.logs.unshift({time:new Date().toLocaleString('ko-KR'),role:state.role,rank:state.rank,label:'상태 수치 저장',numbers:'',detail:`체력: ${person().health}, 가이딩 수치: ${person().guiding}`});save();renderHistory();});
+$('resetStats').addEventListener('click',()=>{if(!confirm('초기화하시겠습니까?'))return;person().health=100;person().guiding=100;$('health').value=100;$('guiding').value=100;save();updateGuidingWarning();state.logs.unshift({time:new Date().toLocaleString('ko-KR'),role:state.role,rank:state.rank,label:'상태 수치 초기화',numbers:'',detail:'체력과 가이딩 수치를 각각 100으로 변경했습니다.'});save();renderHistory();});
+$('damage').addEventListener('keydown',e=>{if(e.key==='Enter')doAction('normal-defense')});
+document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>doAction(b.dataset.action)));
+$('exportBtn').addEventListener('click',()=>{const text=state.logs.map(log=>`[${log.time||''}] ${log.role==='sentinel'?'센티넬':'가이드'} · ${log.rank||''}급 | ${log.label||''}\n${log.numbers||''}\n${log.detail||''}`).join('\n\n------------------------------\n\n');const blob=new Blob([text||'기록이 없습니다.'],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cama-records.txt';a.click();URL.revokeObjectURL(a.href);});
+$('clearBtn').addEventListener('click',()=>{if(confirm('전체 다이스 기록을 삭제하시겠습니까?')){state.logs=[];save();renderHistory();}});
+load();syncForm();renderHistory();
+})();
+</script>
+</body>
+</html>
